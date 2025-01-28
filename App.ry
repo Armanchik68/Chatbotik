@@ -1,0 +1,30 @@
+import openai
+from flask import Flask, request, jsonify
+
+# Инициализация Flask приложения
+app = Flask(__name__)
+
+# Вставьте сюда ваш API-ключ от OpenAI
+openai.api_key = 'your-openai-api-key-here'
+
+# Простой API-эндпоинт для общения с клиентом
+@app.route('/chat', methods=['POST'])
+def chat():
+    # Получение сообщений от клиента
+    user_message = request.json.get("message")
+    
+    # Отправка запроса к OpenAI для генерации ответа
+    response = openai.Completion.create(
+        model="text-davinci-003",  # Используем модель GPT-3
+        prompt=user_message,
+        max_tokens=150
+    )
+
+    # Извлекаем ответ
+    bot_response = response.choices[0].text.strip()
+
+    # Возвращаем ответ клиенту
+    return jsonify({"response": bot_response})
+
+if __name__ == '__main__':
+    app.run(debug=True)
